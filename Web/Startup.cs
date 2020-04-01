@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Scrapper;
 using Scrapper.DocumentProviders;
 using Scrapper.External;
 using Scrapper.Parsers;
@@ -23,13 +24,15 @@ namespace Web
             Configuration = configuration;
 
             var page = new WebDocumentProvider(new HtmlWebProvider());
-            var doc = page.Get("https://www.otodom.pl/sprzedaz/mieszkanie/wroclaw/?search%5Bcreated_since%5D=1&search%5Bregion_id%5D=1&search%5Bsubregion_id%5D=381&search%5Bcity_id%5D=39");
             var parser = new OfferParser();
-            var offers = parser.GetOffers(doc);
             var pageParser = new PageCountParser();
-            var pageCount = pageParser.GetPageCount(doc);
-            Console.WriteLine(pageCount);
-
+            var scrappingManager = new ScrappingManager(
+                parser,
+                pageParser,
+                page
+            );
+            var offers = scrappingManager.GetOffers("https://www.otodom.pl/sprzedaz/mieszkanie/wroclaw/?search%5Bcreated_since%5D=1&search%5Bregion_id%5D=1&search%5Bsubregion_id%5D=381&search%5Bcity_id%5D=39&nrAdsPerPage=72");
+            Console.WriteLine(offers.ToList().Count);
         }
 
         public IConfiguration Configuration { get; }
