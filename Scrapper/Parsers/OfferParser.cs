@@ -7,30 +7,30 @@ namespace Scrapper.Parsers
 {
     public class OfferParser
     {
+        const string OFFER_SELECTOR = "//article[contains(@data-featured-name, 'listing_no_promo')]";
+        const string PRICE_SELECTOR = ".//li[contains(@class, 'offer-item-price')]";
+        const string AREA_SELECTOR = ".//li[contains(@class, 'offer-item-area')]";
+        const string PRICE_PER_M_SELECTOR = ".//li[contains(@class, 'offer-item-price-per-m')]";
+        const string TITLE_SELECTOR = ".//span[contains(@class, 'offer-item-title')]";
+        const string URL_SELECTOR = ".//a[contains(@data-featured-name, 'listing_no_promo')]";
+        const string OFFERED_BY_SELECTOR = ".//div[contains(@class, 'offer-item-details-bottom')]//li";
+        const string LOCATION_SELECTOR = ".//header[contains(@class, 'offer-item-header')]//p";
+        
         public IEnumerable<Offer> GetOffers(HtmlDocument document)
         {
             var offers = new List<Offer>();
-            var offerNodes = document.DocumentNode.SelectNodes("//article[contains(@data-featured-name, 'listing_no_promo')]");
+            var offerNodes = document.DocumentNode.SelectNodes(OFFER_SELECTOR);
             foreach(var node in offerNodes)
             {
-                // chain of responsibility pattern
-                var price = GetPrice(node);
-                var area = GetArea(node);
-                var pricePerUnit = GerPricePerUnit(node);
-                var title = GetTitle(node);
-                var url = GetUrl(node);
-                var offeredBy = GetOfferedBy(node);
-                var location = GetLocation(node);
-
                 var offer = new Offer()
                 {
-                    Title = title,
-                    Area = area,
-                    PricePerUnit = pricePerUnit,
-                    Price = price,
-                    Url = url,
-                    OfferedBy = offeredBy,
-                    Location = location
+                    Title = Get(node, TITLE_SELECTOR),
+                    Area = Get(node, AREA_SELECTOR, "m²"),
+                    PricePerUnit = Get(node, PRICE_PER_M_SELECTOR, "zł/m²"),
+                    Price = Get(node, PRICE_SELECTOR, "zł"),
+                    Url = Get(node, URL_SELECTOR),
+                    OfferedBy = Get(node, OFFERED_BY_SELECTOR),
+                    Location = Get(node, LOCATION_SELECTOR)
                 };
                 
                 offers.Add(offer);
@@ -39,28 +39,13 @@ namespace Scrapper.Parsers
             return offers;
         }
 
-        private decimal GetPrice(HtmlNode node)
+        private string Get(HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText;
+        private decimal Get(HtmlNode node, string selector, string replaceText) 
         {
-            decimal price;
-            Decimal.TryParse(node.SelectSingleNode(".//li[contains(@class, 'offer-item-price')]").InnerText.Replace("zł", ""), out price);
-            return price;
-        } 
-        private decimal GetArea(HtmlNode node)
-        {
-            decimal area;
-            Decimal.TryParse(node.SelectSingleNode(".//li[contains(@class, 'offer-item-area')]").InnerText.Replace("m²", ""), out area);
-            return area;
+            decimal value;
+            Decimal.TryParse(node.SelectSingleNode(selector).InnerText.Replace(replaceText, ""), out value);
+            return value;
         }
-        private decimal GerPricePerUnit(HtmlNode node)
-        {
-            decimal pricePerUnit;
-            Decimal.TryParse(node.SelectSingleNode(".//li[contains(@class, 'offer-item-price-per-m')]").InnerText.Replace("zł/m²", ""), out pricePerUnit);
-            return pricePerUnit;
-        }
-        private string GetTitle(HtmlNode node) => node.SelectSingleNode(".//span[contains(@class, 'offer-item-title')]").InnerText;
-        private string GetUrl(HtmlNode node) => node.SelectSingleNode(".//a[contains(@data-featured-name, 'listing_no_promo')]").InnerText;
-        private string GetOfferedBy(HtmlNode node) => node.SelectSingleNode(".//div[contains(@class, 'offer-item-details-bottom')]").SelectSingleNode(".//li").InnerText;
-        private string GetLocation(HtmlNode node) => node.SelectSingleNode(".//header[contains(@class, 'offer-item-header')]").SelectSingleNode(".//p").InnerText;
         
     }
 }
