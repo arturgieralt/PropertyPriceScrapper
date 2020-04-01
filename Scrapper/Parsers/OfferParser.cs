@@ -15,7 +15,7 @@ namespace Scrapper.Parsers
         const string URL_SELECTOR = ".//a[contains(@data-featured-name, 'listing_no_promo')]";
         const string OFFERED_BY_SELECTOR = ".//div[contains(@class, 'offer-item-details-bottom')]//li";
         const string LOCATION_SELECTOR = ".//header[contains(@class, 'offer-item-header')]//p";
-        
+
         public IEnumerable<Offer> GetOffers(HtmlDocument document)
         {
             var offers = new List<Offer>();
@@ -24,13 +24,13 @@ namespace Scrapper.Parsers
             {
                 var offer = new Offer()
                 {
-                    Title = Get(node, TITLE_SELECTOR),
-                    Area = Get(node, AREA_SELECTOR, "m²"),
-                    PricePerUnit = Get(node, PRICE_PER_M_SELECTOR, "zł/m²"),
-                    Price = Get(node, PRICE_SELECTOR, "zł"),
-                    Url = Get(node, URL_SELECTOR),
-                    OfferedBy = Get(node, OFFERED_BY_SELECTOR),
-                    Location = Get(node, LOCATION_SELECTOR)
+                    Title = node.GetString(TITLE_SELECTOR),
+                    Area = node.GetDecimal(AREA_SELECTOR),
+                    PricePerUnit = node.GetDecimal(PRICE_PER_M_SELECTOR),
+                    Price = node.GetDecimal(PRICE_SELECTOR),
+                    Url = node.GetString(URL_SELECTOR),
+                    OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
+                    Location = node.GetString(LOCATION_SELECTOR)
                 };
                 
                 offers.Add(offer);
@@ -39,13 +39,7 @@ namespace Scrapper.Parsers
             return offers;
         }
 
-        private string Get(HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText;
-        private decimal Get(HtmlNode node, string selector, string replaceText) 
-        {
-            decimal value;
-            Decimal.TryParse(node.SelectSingleNode(selector).InnerText.Replace(replaceText, ""), out value);
-            return value;
-        }
+
         
     }
 }
