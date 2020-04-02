@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BusinessLogic.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,17 @@ namespace Scheduler
 {
     private int executionCount = 0;
     private readonly ILogger<ScrapperHostedService> _logger;
-    private IServiceProvider _serviceProvider;
+    private OfferService _offerService;
     private ScrappingManager _scrapper;
     private Timer _timer;
 
-    public ScrapperHostedService(ILogger<ScrapperHostedService> logger,  IServiceProvider serviceProvider,  ScrappingManager scrapper)
+    public ScrapperHostedService(
+        ILogger<ScrapperHostedService> logger,  
+        OfferService offerService,  
+        ScrappingManager scrapper)
     {
         _logger = logger;
-        _serviceProvider = serviceProvider;
+        _offerService = offerService;
         _scrapper = scrapper;
     }
 
@@ -40,12 +44,9 @@ namespace Scheduler
         var count = Interlocked.Increment(ref executionCount);
 
         var offers = _scrapper.GetOffers("https://www.otodom.pl/sprzedaz/mieszkanie/wroclaw/?search%5Bcreated_since%5D=1&search%5Bregion_id%5D=1&search%5Bsubregion_id%5D=381&search%5Bcity_id%5D=39&nrAdsPerPage=72");
+        await _offerService.InsertManyAsync(offers);
+        
         Console.WriteLine(offers.ToList().Count);
-            
-        // using( var scope = _serviceProvider.CreateScope()) {
-        //     var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-
-        // }
         
         _logger.LogInformation(
             "Timed Hosted Service is working. Count: {Count}", count);
