@@ -42,9 +42,8 @@ namespace Scrapper
             return Enumerable.Range(2, totalCount -1 ).Select(page => {
                     var url = $"{initUrl}&page={page}";
                     var newDock = _webDocumentProvider.Get(url);
-                    var pageOffers = _offerParser.GetOffers(newDock);
-
-                    return pageOffers;
+                    
+                    return _offerParser.GetOffers(newDock);
                 }).SelectMany(aO => aO);
         }
     }

@@ -7,6 +7,7 @@ namespace Scrapper.Parsers
     public static class HtmlNodeExtensions
     {
         public static string GetString(this HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText;
+        
         public static decimal GetDecimal(this HtmlNode node, string selector) 
         {
             decimal value;
