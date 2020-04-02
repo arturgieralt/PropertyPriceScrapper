@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using HtmlAgilityPack;
 
@@ -8,23 +9,24 @@ namespace Scrapper.Parsers
     {
         public static string GetString(this HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText;
         
-        public static decimal GetDecimal(this HtmlNode node, string selector) 
+        public static double GetDouble(this HtmlNode node, string selector) 
         {
-            decimal value;
-            Decimal.TryParse(node.SelectSingleNode(selector).InnerText.RemoveNonNumeric(), out value);
-            return value;
+            var ci = CultureInfo.InvariantCulture.Clone() as CultureInfo;
+            ci.NumberFormat.NumberDecimalSeparator = ",";
+
+            var parsedString = node.SelectSingleNode(selector).InnerText.RemoveNonNumeric();
+            Console.WriteLine(parsedString);
+            return Double.Parse(parsedString, ci);
         }
 
         public static int GetInt(this HtmlNode node, string selector) 
         {
-            int value;
-            Int32.TryParse(node.SelectSingleNode(selector).InnerText.RemoveNonNumeric(), out value);
-            return value;
+            return Int32.Parse(node.SelectSingleNode(selector).InnerText.RemoveNonNumeric());
         }
 
         public static string RemoveNonNumeric(this string s)
         {
-            return string.Concat(s.Where(c => char.IsNumber(c) || c == ',') ?? "");
+            return string.Concat(s.Where(c => (char.IsNumber(c) && c != Char.Parse("²")) || c == ',') ?? "");
         }
     }
 }

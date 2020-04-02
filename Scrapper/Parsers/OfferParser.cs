@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using HtmlAgilityPack;
 using BusinessLogic.Models;
+using System;
 
 namespace Scrapper.Parsers
 {
@@ -24,15 +25,15 @@ namespace Scrapper.Parsers
                 var offer = new Offer()
                 {
                     Title = node.GetString(TITLE_SELECTOR),
-                    Area = node.GetDecimal(AREA_SELECTOR),
+                    Area = node.GetDouble(AREA_SELECTOR),
                     AreaUnit = AreaUnit.SquareMeter,
-                    PricePerUnit = node.GetDecimal(PRICE_PER_M_SELECTOR),
-                    Price = node.GetDecimal(PRICE_SELECTOR),
+                    PricePerUnit = node.GetDouble(PRICE_PER_M_SELECTOR),
+                    Price = node.GetDouble(PRICE_SELECTOR),
                     Url = node.GetString(URL_SELECTOR),
                     OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
                     Location = node.GetString(LOCATION_SELECTOR)
                 };
-                
+                Console.WriteLine($"priceperunit: {offer.PricePerUnit}");
                 offers.Add(offer);
             }
 
