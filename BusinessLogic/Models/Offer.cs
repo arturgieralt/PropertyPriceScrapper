@@ -1,4 +1,4 @@
-namespace Scrapper.Models
+namespace BusinessLogic.Models
 {
     public enum AreaUnit {
         SquareMeter

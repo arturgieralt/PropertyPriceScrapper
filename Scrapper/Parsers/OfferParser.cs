@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Scrapper.Models;
 using HtmlAgilityPack;
-using System;
+using BusinessLogic.Models;
 
 namespace Scrapper.Parsers
 {
@@ -26,6 +25,7 @@ namespace Scrapper.Parsers
                 {
                     Title = node.GetString(TITLE_SELECTOR),
                     Area = node.GetDecimal(AREA_SELECTOR),
+                    AreaUnit = AreaUnit.SquareMeter,
                     PricePerUnit = node.GetDecimal(PRICE_PER_M_SELECTOR),
                     Price = node.GetDecimal(PRICE_SELECTOR),
                     Url = node.GetString(URL_SELECTOR),

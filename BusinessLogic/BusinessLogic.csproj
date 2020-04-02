@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
-    <ProjectReference Include="..\Scrapper\Scrapper.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

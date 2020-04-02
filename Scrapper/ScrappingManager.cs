@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using BusinessLogic.Models;
 using Scrapper.DocumentProviders;
-using Scrapper.Models;
 using Scrapper.Parsers;
 
 namespace Scrapper
