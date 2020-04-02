@@ -7,7 +7,7 @@ namespace Scrapper.Parsers
 {
     public static class HtmlNodeExtensions
     {
-        public static string GetString(this HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText;
+        public static string GetString(this HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText.Replace(@"\t|\n|\r", String.Empty).Trim();
         
         public static double GetDouble(this HtmlNode node, string selector) 
         {
@@ -15,7 +15,6 @@ namespace Scrapper.Parsers
             ci.NumberFormat.NumberDecimalSeparator = ",";
 
             var parsedString = node.SelectSingleNode(selector).InnerText.RemoveNonNumeric();
-            Console.WriteLine(parsedString);
             return Double.Parse(parsedString, ci);
         }
 

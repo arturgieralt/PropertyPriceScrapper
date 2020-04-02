@@ -29,11 +29,10 @@ namespace Scrapper.Parsers
                     AreaUnit = AreaUnit.SquareMeter,
                     PricePerUnit = node.GetDouble(PRICE_PER_M_SELECTOR),
                     Price = node.GetDouble(PRICE_SELECTOR),
-                    Url = node.GetString(URL_SELECTOR),
+                    Url = node.SelectSingleNode(URL_SELECTOR).GetAttributeValue("href", String.Empty),
                     OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
                     Location = node.GetString(LOCATION_SELECTOR)
                 };
-                Console.WriteLine($"priceperunit: {offer.PricePerUnit}");
                 offers.Add(offer);
             }
 
