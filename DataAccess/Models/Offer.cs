@@ -15,7 +15,7 @@ namespace DataAccess.Models
         
         public string Title { get; set; }
         public decimal Area { get; set; }
-        public AreaUnit AreaUnit { get; set; }
+        public string AreaUnit { get; set; }
         public decimal PricePerUnit { get; set; }
         public decimal Price { get; set; }
 
