@@ -9,6 +9,8 @@ namespace Scrapper.Parsers
     {
         public static string GetString(this HtmlNode node, string selector) => node.SelectSingleNode(selector).InnerText.Replace(@"\t|\n|\r", String.Empty).Trim();
         
+        public static string GetHref(this HtmlNode node, string selector) => node.SelectSingleNode(selector).GetAttributeValue("href", String.Empty);
+        
         public static double GetDouble(this HtmlNode node, string selector) 
         {
             var ci = CultureInfo.InvariantCulture.Clone() as CultureInfo;

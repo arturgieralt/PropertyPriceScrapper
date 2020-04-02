@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using BusinessLogic.Models;
@@ -25,7 +26,15 @@ namespace Scrapper
         public IEnumerable<Offer> GetOffers(string initUrl)
         {
             var document = _webDocumentProvider.Get(initUrl);
-            var totalCount = _pageCountParser.GetPageCount(document);
+            int totalCount;
+
+            try 
+            {
+                totalCount = _pageCountParser.GetPageCount(document);
+            } catch (Exception e){
+                totalCount = 0;
+            }
+            
             var firstPageOffers = _offerParser.GetOffers(document);
             
             if(totalCount > 1)

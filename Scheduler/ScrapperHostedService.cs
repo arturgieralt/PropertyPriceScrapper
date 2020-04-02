@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,16 +18,19 @@ namespace Scheduler
     private readonly ILogger<ScrapperHostedService> _logger;
     private OfferService _offerService;
     private ScrappingManager _scrapper;
+    private UrlBuilder _urlBuilder;
     private Timer _timer;
 
     public ScrapperHostedService(
         ILogger<ScrapperHostedService> logger,  
-        OfferService offerService,  
+        OfferService offerService, 
+        UrlBuilder urlBuilder, 
         ScrappingManager scrapper)
     {
         _logger = logger;
         _offerService = offerService;
         _scrapper = scrapper;
+        _urlBuilder = urlBuilder;
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
@@ -42,14 +46,30 @@ namespace Scheduler
     private async Task DoWork(object state)
     {
         var count = Interlocked.Increment(ref executionCount);
-
-        var offers = _scrapper.GetOffers("https://www.otodom.pl/sprzedaz/mieszkanie/wroclaw/?search%5Bcreated_since%5D=1&search%5Bregion_id%5D=1&search%5Bsubregion_id%5D=381&search%5Bcity_id%5D=39&nrAdsPerPage=72");
-        await _offerService.InsertManyAsync(offers);
         
-        Console.WriteLine(offers.ToList().Count);
+        var tasks = GetUrlList().Select(SaveOffersFromPage);
+        await Task.WhenAll(tasks);
         
         _logger.LogInformation(
             "Timed Hosted Service is working. Count: {Count}", count);
+    }
+
+    private IEnumerable<string> GetUrlList()
+    {
+        return new List<string>(){
+            _urlBuilder.ForWroclaw().ForFlat().Build(),
+            _urlBuilder.ForWarsaw().ForFlat().Build(),
+        };
+    }
+
+    private async Task SaveOffersFromPage(string url)
+    {
+        var offers = _scrapper.GetOffers(url);
+        
+        if(offers.ToList().Count > 0) 
+        {
+            await _offerService.InsertManyAsync(offers);   
+        }
     }
 
     public Task StopAsync(CancellationToken stoppingToken)

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using HtmlAgilityPack;
 using BusinessLogic.Models;
 using System;
+using System.Linq;
 
 namespace Scrapper.Parsers
 {
@@ -22,24 +23,31 @@ namespace Scrapper.Parsers
             var offerNodes = document.DocumentNode.SelectNodes(OFFER_SELECTOR);
             foreach(var node in offerNodes)
             {
-                var offer = new Offer()
+                Offer offer;
+                
+                try {
+                   offer = new Offer()
+                    {
+                        Title = node.GetString(TITLE_SELECTOR),
+                        Area = node.GetDouble(AREA_SELECTOR),
+                        AreaUnit = AreaUnit.SquareMeter,
+                        PricePerUnit = node.GetDouble(PRICE_PER_M_SELECTOR),
+                        Price = node.GetDouble(PRICE_SELECTOR),
+                        Url = node.GetHref(URL_SELECTOR),
+                        OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
+                        Location = ParseLocation(node.GetString(LOCATION_SELECTOR))
+                    };
+                    offers.Add(offer);
+                } catch(Exception e)
                 {
-                    Title = node.GetString(TITLE_SELECTOR),
-                    Area = node.GetDouble(AREA_SELECTOR),
-                    AreaUnit = AreaUnit.SquareMeter,
-                    PricePerUnit = node.GetDouble(PRICE_PER_M_SELECTOR),
-                    Price = node.GetDouble(PRICE_SELECTOR),
-                    Url = node.SelectSingleNode(URL_SELECTOR).GetAttributeValue("href", String.Empty),
-                    OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
-                    Location = node.GetString(LOCATION_SELECTOR)
-                };
-                offers.Add(offer);
+                    Console.WriteLine(e.Message);
+                }
             }
 
             return offers;
         }
 
-
+        private string ParseLocation(string location) => new string(location.Skip(location.IndexOf(":") + 1).ToArray()).Trim();
         
     }
 }
