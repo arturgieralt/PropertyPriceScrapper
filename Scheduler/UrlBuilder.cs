@@ -1,3 +1,5 @@
+using BusinessLogic.Models;
+
 namespace Scheduler
 {
     public class UrlBuilder
@@ -8,34 +10,61 @@ namespace Scheduler
         private string _subRegionId { get; set; }
         private string _cityId { get; set; }
 
-        public UrlBuilder ForWroclaw()
+
+        public UrlBuilder ForCity(City city)
+        {
+            switch(city)
+            {
+                case City.Warsaw:
+                    ForWarsaw();
+                    break;
+                case City.Wroclaw:
+                    ForWroclaw();
+                    break;
+            }
+
+            return this;
+        }
+        private void ForWroclaw()
         {
             _city = "wroclaw";
             _regionId = "1";
             _subRegionId = "381";
             _cityId = "39";
-            return this;
         }
 
-        public UrlBuilder ForWarsaw()
+        private void ForWarsaw()
         {
             _city = "warszawa";
             _regionId = "7";
             _subRegionId = "197";
             _cityId = "26";
+        }
+
+        public UrlBuilder ForType(OfferType offerType)
+        {
+            switch(offerType)
+            {
+                case OfferType.Flat:
+                    ForFlat();
+                    break;
+                case OfferType.House:
+                    ForHouse();
+                    break;
+            }
+
             return this;
         }
 
-        public UrlBuilder ForFlat()
+
+        private void ForFlat()
         {
             _city = "mieszkanie";
-            return this;
         }
 
-        public UrlBuilder ForHouse()
+        private void ForHouse()
         {
             _city = "dom";
-            return this;
         }
 
         public string Build()

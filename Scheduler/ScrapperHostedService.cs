@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BusinessLogic.Models;
 using BusinessLogic.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Scheduler.ScheduledTask;
 using Scrapper;
 
 namespace Scheduler
@@ -14,6 +16,17 @@ namespace Scheduler
 
     public class ScrapperHostedService : IHostedService, IDisposable
 {
+    private readonly IList<ScrappingRequest> _taskList = new List<ScrappingRequest>(){
+        new ScrappingRequest(){
+            City = City.Wroclaw,
+            OfferType = OfferType.Flat
+        },
+        new ScrappingRequest(){
+            City = City.Warsaw,
+            OfferType = OfferType.Flat
+        }
+    };
+
     private int executionCount = 0;
     private readonly ILogger<ScrapperHostedService> _logger;
     private OfferService _offerService;
@@ -47,24 +60,17 @@ namespace Scheduler
     {
         var count = Interlocked.Increment(ref executionCount);
         
-        var tasks = GetUrlList().Select(SaveOffersFromPage);
+        var tasks = _taskList.Select(SaveOffersFromPage);
         await Task.WhenAll(tasks);
         
         _logger.LogInformation(
             "Timed Hosted Service is working. Count: {Count}", count);
     }
 
-    private IEnumerable<string> GetUrlList()
+    private async Task SaveOffersFromPage(ScrappingRequest request)
     {
-        return new List<string>(){
-            _urlBuilder.ForWroclaw().ForFlat().Build(),
-            _urlBuilder.ForWarsaw().ForFlat().Build(),
-        };
-    }
-
-    private async Task SaveOffersFromPage(string url)
-    {
-        var offers = _scrapper.GetOffers(url);
+        var url = _urlBuilder.ForCity(request.City).ForType(request.OfferType).Build();
+        var offers = _scrapper.GetOffers(url, request.City, request.OfferType);
         
         if(offers.ToList().Count > 0) 
         {

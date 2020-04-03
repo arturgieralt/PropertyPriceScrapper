@@ -17,7 +17,7 @@ namespace Scrapper.Parsers
         const string OFFERED_BY_SELECTOR = ".//div[contains(@class, 'offer-item-details-bottom')]//li";
         const string LOCATION_SELECTOR = ".//header[contains(@class, 'offer-item-header')]//p";
 
-        public IEnumerable<Offer> GetOffers(HtmlDocument document)
+        public IEnumerable<Offer> GetOffers(HtmlDocument document, City city, OfferType offerType)
         {
             var offers = new List<Offer>();
             var offerNodes = document.DocumentNode.SelectNodes(OFFER_SELECTOR);
@@ -31,11 +31,14 @@ namespace Scrapper.Parsers
                         Title = node.GetString(TITLE_SELECTOR),
                         Area = node.GetDouble(AREA_SELECTOR),
                         AreaUnit = AreaUnit.SquareMeter,
+                        PriceUnit = PriceUnit.PolishZloty,
                         PricePerUnit = node.GetDouble(PRICE_PER_M_SELECTOR),
                         Price = node.GetDouble(PRICE_SELECTOR),
                         Url = node.GetHref(URL_SELECTOR),
                         OfferedBy = node.GetString(OFFERED_BY_SELECTOR),
-                        Location = ParseLocation(node.GetString(LOCATION_SELECTOR))
+                        Location = ParseLocation(node.GetString(LOCATION_SELECTOR)),
+                        City = city,
+                        Type = offerType
                     };
                     offers.Add(offer);
                 } catch(Exception e)

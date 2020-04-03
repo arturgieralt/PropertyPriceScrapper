@@ -25,11 +25,15 @@ namespace BusinessLogic.Services
                 Title = o.Title,
                 Area = o.Area,
                 AreaUnit = (AreaUnit)Enum.Parse(typeof(AreaUnit), o.AreaUnit),
+                PriceUnit = (PriceUnit)Enum.Parse(typeof(PriceUnit), o.PriceUnit),
+                City = (City)Enum.Parse(typeof(City), o.City),
+                Type = (OfferType)Enum.Parse(typeof(OfferType), o.Type),
                 Price = o.Price,
                 PricePerUnit = o.PricePerUnit,
                 OfferedBy = o.OfferedBy,
                 Location = o.Location,
-                Url = o.Url
+                Url = o.Url,
+                CreatedOn = o.CreatedOn
             });
         }
 
@@ -40,6 +44,9 @@ namespace BusinessLogic.Services
                 Title = o.Title,
                 Area = o.Area,
                 AreaUnit = Enum.GetName(typeof(AreaUnit), o.AreaUnit),
+                PriceUnit = Enum.GetName(typeof(PriceUnit), o.PriceUnit),
+                City = Enum.GetName(typeof(City), o.City),
+                Type = Enum.GetName(typeof(OfferType), o.Type),
                 Price = o.Price,
                 PricePerUnit = o.PricePerUnit,
                 OfferedBy = o.OfferedBy,
