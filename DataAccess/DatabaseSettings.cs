@@ -1,6 +1,6 @@
-namespace DataAccess.DatabaseSettings
+namespace DataAccess
 {
-    public class DatabaseSettings: IDatabaseSettings
+    public class DatabaseSettings
     {
         public string ConnectionString { get; set; }
         public string DatabaseName { get; set; }

@@ -48,7 +48,6 @@ namespace BusinessLogic.Services
                 Type = o.Type,
                 City = o.City,
                 AveragePrice = o.AveragePrice,
-                Location = o.Location,
                 CreatedOn = o.CreatedOn,
                 Count = o.Count,
                 AveragePricePerUnit = o.AveragePricePerUnit

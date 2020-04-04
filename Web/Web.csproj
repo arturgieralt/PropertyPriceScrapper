@@ -5,6 +5,7 @@
     <ProjectReference Include="..\Scheduler\Scheduler.csproj" />
     <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    <ProjectReference Include="..\MailService\MailService.csproj" />
   </ItemGroup>
 
   <ItemGroup>

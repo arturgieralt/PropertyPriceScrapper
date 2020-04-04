@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BusinessLogic.Models;
 using BusinessLogic.Services;
+using MailService;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,18 +33,21 @@ namespace Scheduler
     private OfferService _offerService;
     private ScrappingManager _scrapper;
     private UrlBuilder _urlBuilder;
+    private readonly MailSender _mailSender; 
     private Timer _timer;
 
     public ScrapperHostedService(
         ILogger<ScrapperHostedService> logger,  
         OfferService offerService, 
         UrlBuilder urlBuilder, 
-        ScrappingManager scrapper)
+        ScrappingManager scrapper,
+        MailSender mailSender)
     {
         _logger = logger;
         _offerService = offerService;
         _scrapper = scrapper;
         _urlBuilder = urlBuilder;
+        _mailSender = mailSender;
     }
 
     public Task StartAsync(CancellationToken stoppingToken)
@@ -60,8 +64,16 @@ namespace Scheduler
     {
         var count = Interlocked.Increment(ref executionCount);
         
-        var tasks = _taskList.Select(SaveOffersFromPage);
-        await Task.WhenAll(tasks);
+        try{
+            var tasks = _taskList.Select(SaveOffersFromPage);
+            await Task.WhenAll(tasks);
+            await _mailSender.SendNotificationAsync("Import succeeded", $"Import count: {executionCount}");
+
+        } catch(Exception e)
+        {
+            await _mailSender.SendNotificationAsync("Import failed", e.Message);
+        }
+        
         
         _logger.LogInformation(
             "Timed Hosted Service is working. Count: {Count}", count);

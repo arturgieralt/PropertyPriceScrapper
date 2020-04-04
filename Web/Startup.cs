@@ -1,6 +1,6 @@
 using BusinessLogic;
 using DataAccess;
-using DataAccess.DatabaseSettings;
+using MailService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -26,14 +26,19 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<DatabaseSettings>(Configuration.GetSection(nameof(DatabaseSettings)));
-            services.AddTransient<IDatabaseSettings>(sp =>
+            services.AddTransient<DatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<DatabaseSettings>>().Value);
+
+            services.Configure<MailSettings>(Configuration.GetSection(nameof(MailSettings)));
+            services.AddTransient<MailSettings>(sp =>
+                sp.GetRequiredService<IOptions<MailSettings>>().Value);
                 
             services.AddControllers();
             services.RegisterScrapperModule();
             services.RegisterSchedulerModule();
             services.RegisterDataAccessModule();
             services.RegisterBusinessLogicModule();
+            services.RegisterMailServiceModule();
 
             services.AddMvc();
 

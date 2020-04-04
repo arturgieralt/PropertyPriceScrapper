@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Scrapper\Scrapper.csproj" />
     <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj" />
+    <ProjectReference Include="..\MailService\MailService.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,9 +9,7 @@ namespace BusinessLogic.Models
         public string Type { get; set; }
         public string City { get; set ;}
         public double AveragePrice { get; set; }
-        public string Location { get; set; }
         public string CreatedOn {get; set; }
-
         public int Count{ get; set; }
     }
 }

@@ -26,19 +26,28 @@ namespace DataAccess.Repositories
 
         public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync()
         {
+            return await _context
+                .Offers
+                .Aggregate(CreatePipeline())
+                .ToListAsync()
+                .ConfigureAwait(false);
+        }
 
-            // var parseDate = new BsonDocument{ 
-            //     { "$project", new BsonDocument{ 
-            //         {"DateAdded", 
-            //         }}
-            //     }}; 
+        public async Task InsertManyAsync(IEnumerable<Offer> offers)
+        {
+            await _context
+            .Offers
+            .InsertManyAsync(offers)
+            .ConfigureAwait(false);
+        }
 
-            var groupByDate = new BsonDocument{ 
+        private PipelineDefinition<Offer, AggregatedOffer> CreatePipeline()
+        {
+            var groupStage = new BsonDocument{ 
                 { "$group", new BsonDocument{ 
                         { "_id", new BsonDocument{
                             {"Type", "$Type"},
                             {"City", "$City"},
-                            {"Location", "$Location"},
                             {"DateAdded", new BsonDocument{
                                 {"$dateToString",new BsonDocument{
                                     { "format", "%Y-%m-%d"}, {"date", "$CreatedOn"} } 
@@ -62,7 +71,7 @@ namespace DataAccess.Repositories
                         }}
                 }}; 
 
-            var chooseProperties = new BsonDocument{ 
+            var projectStage = new BsonDocument{ 
                 { "$project", new BsonDocument{ 
                     {"AveragePrice", new BsonDocument{
                             { "$round", new BsonArray{"$AveragePrice", 2}} } 
@@ -79,30 +88,15 @@ namespace DataAccess.Repositories
                     {"PriceUnit", 1 },
                     {"CreatedOn", "$_id.DateAdded" },
                     {"City", "$_id.City"},
-                    {"Location", "$_id.Location"},
                     {"Type", "$_id.Type" },
                     {"_id", 0}
                 }}
             };
 
-            PipelineDefinition<Offer, AggregatedOffer> pipeline = new BsonDocument[]{
-                groupByDate,
-                chooseProperties
+            return new BsonDocument[]{
+                groupStage,
+                projectStage
             };
-
-            return await _context
-                .Offers
-                .Aggregate(pipeline)
-                .ToListAsync()
-                .ConfigureAwait(false);
-        }
-
-        public async Task InsertManyAsync(IEnumerable<Offer> offers)
-        {
-            await _context
-            .Offers
-            .InsertManyAsync(offers)
-            .ConfigureAwait(false);
         }
     }
 }
