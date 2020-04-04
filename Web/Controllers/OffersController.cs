@@ -25,7 +25,7 @@ namespace Web.Controllers
             return Ok(offers);
         }
 
-        [Route("/aggregated")]
+        [Route("aggregated")]
         [HttpGet]
         public async Task<IActionResult> GetAllAggregated()
         {

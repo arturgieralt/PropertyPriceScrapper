@@ -6,7 +6,7 @@ namespace Scheduler
     {
         public static void RegisterSchedulerModule(this IServiceCollection services)
         {
-           services.AddHostedService<ScrapperHostedService>();
+           // services.AddHostedService<ScrapperHostedService>();
             services.AddTransient<UrlBuilder>();
         }
     }

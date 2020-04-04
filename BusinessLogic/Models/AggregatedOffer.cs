@@ -2,7 +2,6 @@ namespace BusinessLogic.Models
 {
     public class AggregatedOffer
     {
-        public string Id { get; set ;}
         public double AverageArea { get; set; }
         public string AreaUnit { get; set; }
         public string PriceUnit {get; set; }

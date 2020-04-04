@@ -51,6 +51,12 @@ namespace DataAccess.Repositories
                         { "AverageArea", new BsonDocument{
                             { "$avg", "$Area"}} 
                         },
+                        { "AreaUnit", new BsonDocument{
+                            { "$first", "$AreaUnit"} } 
+                        },
+                        { "PriceUnit", new BsonDocument{
+                            { "$first", "$PriceUnit"} } 
+                        },
                         { "Count", new BsonDocument{
                             { "$sum", 1}} 
                         }}
@@ -58,12 +64,19 @@ namespace DataAccess.Repositories
 
             var chooseProperties = new BsonDocument{ 
                 { "$project", new BsonDocument{ 
-                    {"AveragePrice", 1 },
-                    {"AverageArea", 1 },
+                    {"AveragePrice", new BsonDocument{
+                            { "$round", new BsonArray{"$AveragePrice", 2}} } 
+                        },
+                    {"AverageArea", new BsonDocument{
+                            { "$round", new BsonArray{"$AverageArea", 2}} } 
+                        },
                     {"AveragePricePerUnit", new BsonDocument{
-                            { "$divide", new BsonArray{"$AveragePrice", "$AverageArea"}} } 
-                        } ,
+                            { "$round", new BsonArray{new BsonDocument{
+                            { "$divide", new BsonArray{"$AveragePrice", "$AverageArea"}} } , 2}} } 
+                        },
                     {"Count", 1 },
+                    {"AreaUnit", 1 },
+                    {"PriceUnit", 1 },
                     {"CreatedOn", "$_id.DateAdded" },
                     {"City", "$_id.City"},
                     {"Location", "$_id.Location"},

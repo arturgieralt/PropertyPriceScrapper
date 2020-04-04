@@ -51,7 +51,6 @@ namespace BusinessLogic.Services
                 Location = o.Location,
                 CreatedOn = o.CreatedOn,
                 Count = o.Count,
-                Id = o.Id,
                 AveragePricePerUnit = o.AveragePricePerUnit
             });
         }
