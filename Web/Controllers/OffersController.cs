@@ -24,5 +24,13 @@ namespace Web.Controllers
             var offers = await _service.GetAllAsync();
             return Ok(offers);
         }
+
+        [Route("/aggregated")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllAggregated()
+        {
+            var offers = await _service.GetAllAggregatedAsync();
+            return Ok(offers);
+        }
     }
 }

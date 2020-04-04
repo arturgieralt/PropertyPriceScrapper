@@ -1,13 +1,8 @@
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace DataAccess.Models
+namespace BusinessLogic.Models
 {
     public class AggregatedOffer
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set ;}
         public double AverageArea { get; set; }
         public string AreaUnit { get; set; }
         public string PriceUnit {get; set; }
@@ -17,7 +12,7 @@ namespace DataAccess.Models
         public double AveragePrice { get; set; }
         public string Location { get; set; }
         public string CreatedOn {get; set; }
-        public int Count {get; set; }
 
+        public int Count{ get; set; }
     }
 }

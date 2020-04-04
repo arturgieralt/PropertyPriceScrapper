@@ -27,28 +27,29 @@ namespace DataAccess.Repositories
         public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync()
         {
 
-            var parseDate = new BsonDocument{ 
-                { "$project", new BsonDocument{ 
-                    {"DateAdded", new BsonDocument{
-                        {"$dateToString",new BsonDocument{
-                            { "format", "%Y-%m-%d"}, {"date", "$CreatedOn"} } 
-                        }}
-                    }}
-                }}; 
+            // var parseDate = new BsonDocument{ 
+            //     { "$project", new BsonDocument{ 
+            //         {"DateAdded", 
+            //         }}
+            //     }}; 
 
             var groupByDate = new BsonDocument{ 
                 { "$group", new BsonDocument{ 
-                        { "_id", new BsonDocument{ 
-                            { "Type", "$Type"},
-                            { "City", "$City"},
-                            { "Location", "$Location"},
-                            { "CreatedOn", "$CreatedOn"}}
+                        { "_id", new BsonDocument{
+                            {"Type", "$Type"},
+                            {"City", "$City"},
+                            {"Location", "$Location"},
+                            {"DateAdded", new BsonDocument{
+                                {"$dateToString",new BsonDocument{
+                                    { "format", "%Y-%m-%d"}, {"date", "$CreatedOn"} } 
+                                }}
+                            }}
                         },
-                        { "AverageTotalPrice", new BsonDocument{
-                            { "$avg", "$price"} } 
+                        { "AveragePrice", new BsonDocument{
+                            { "$avg", "$Price"} } 
                         },
                         { "AverageArea", new BsonDocument{
-                            { "$avg", "$area"}} 
+                            { "$avg", "$Area"}} 
                         },
                         { "Count", new BsonDocument{
                             { "$sum", 1}} 
@@ -57,18 +58,21 @@ namespace DataAccess.Repositories
 
             var chooseProperties = new BsonDocument{ 
                 { "$project", new BsonDocument{ 
-                    {"AverageTotalPrice", 1 },
+                    {"AveragePrice", 1 },
                     {"AverageArea", 1 },
+                    {"AveragePricePerUnit", new BsonDocument{
+                            { "$divide", new BsonArray{"$AveragePrice", "$AverageArea"}} } 
+                        } ,
                     {"Count", 1 },
-                    {"CreatedOn", "$_id.CreatedOn" },
-                    {"City", "$_id.City" },
-                    {"Location", "$_id.Location" },
+                    {"CreatedOn", "$_id.DateAdded" },
+                    {"City", "$_id.City"},
+                    {"Location", "$_id.Location"},
                     {"Type", "$_id.Type" },
+                    {"_id", 0}
                 }}
             };
 
             PipelineDefinition<Offer, AggregatedOffer> pipeline = new BsonDocument[]{
-                parseDate,
                 groupByDate,
                 chooseProperties
             };

@@ -37,6 +37,25 @@ namespace BusinessLogic.Services
             });
         }
 
+        public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync()
+        {
+            var offers = await _repository.GetAllAggregatedAsync().ConfigureAwait(false);
+
+            return offers.Select(o => new AggregatedOffer{
+                AverageArea = o.AverageArea,
+                AreaUnit = o.AreaUnit,
+                PriceUnit = o.PriceUnit,
+                Type = o.Type,
+                City = o.City,
+                AveragePrice = o.AveragePrice,
+                Location = o.Location,
+                CreatedOn = o.CreatedOn,
+                Count = o.Count,
+                Id = o.Id,
+                AveragePricePerUnit = o.AveragePricePerUnit
+            });
+        }
+
         public async Task InsertManyAsync(IEnumerable<Offer> offers)
         {
             var offersToInsert = offers.Select(o => new DatabaseOfferModels.Offer()
