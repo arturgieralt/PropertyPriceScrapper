@@ -34,6 +34,7 @@ namespace Scrapper
                 totalCount = _pageCountParser.GetPageCount(document);
             } catch (Exception e){
                 totalCount = 0;
+                Console.WriteLine(e.Message);
             }
             
             var firstPageOffers = _offerParser.GetOffers(document, city, offerType);

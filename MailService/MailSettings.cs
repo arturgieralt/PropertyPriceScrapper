@@ -9,6 +9,5 @@ namespace MailService
         public string Login { get; set; }
         public string Password { get; set; }
         public bool EnableSsl { get; set; }
-        public string EmailKey { get; set; }
     }
 }
