@@ -43,6 +43,11 @@ namespace Web
 
             services.AddMvc();
 
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "Client/build";
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "House Offers API", Version = "v1" });
@@ -68,7 +73,11 @@ namespace Web
             }
 
             app.UseHttpsRedirection();
-            
+            app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
@@ -85,6 +94,19 @@ namespace Web
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSpa(spa =>
+            {
+                // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                // see https://go.microsoft.com/fwlink/?linkid=864501
+
+                spa.Options.SourcePath = "Client";
+
+                if (env.IsDevelopment())
+                {
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+                }
             });
         }
     }
