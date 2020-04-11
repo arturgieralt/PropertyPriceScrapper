@@ -24,11 +24,11 @@ namespace DataAccess.Repositories
                 .ConfigureAwait(false);
         }
 
-        public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync()
+        public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync(int minSize, int maxSize)
         {
             return await _context
                 .Offers
-                .Aggregate(CreatePipeline())
+                .Aggregate(CreatePipeline(minSize, maxSize))
                 .ToListAsync()
                 .ConfigureAwait(false);
         }
@@ -40,9 +40,17 @@ namespace DataAccess.Repositories
             .InsertManyAsync(offers)
             .ConfigureAwait(false);
         }
-
-        private PipelineDefinition<Offer, AggregatedOffer> CreatePipeline()
+        private PipelineDefinition<Offer, AggregatedOffer> CreatePipeline(int minSize, int maxSize)
         {
+            var queryStage =  new BsonDocument{ 
+                { "$match", new BsonDocument{ 
+                    { "Area", new BsonDocument{ 
+                            { "$gte", Convert.ToDouble(minSize)},
+                            { "$lte", Convert.ToDouble(maxSize)}
+                    }
+                }}
+                }};
+
             var groupStage = new BsonDocument{ 
                 { "$group", new BsonDocument{ 
                         { "_id", new BsonDocument{
@@ -94,6 +102,7 @@ namespace DataAccess.Repositories
             };
 
             return new BsonDocument[]{
+                queryStage,
                 groupStage,
                 projectStage
             };

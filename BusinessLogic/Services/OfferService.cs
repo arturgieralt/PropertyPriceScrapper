@@ -37,9 +37,9 @@ namespace BusinessLogic.Services
             });
         }
 
-        public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync()
+        public async Task<IEnumerable<AggregatedOffer>> GetAllAggregatedAsync(int minSize, int maxSize)
         {
-            var offers = await _repository.GetAllAggregatedAsync().ConfigureAwait(false);
+            var offers = await _repository.GetAllAggregatedAsync(minSize, maxSize).ConfigureAwait(false);
 
             return offers.Select(o => new AggregatedOffer{
                 AverageArea = o.AverageArea,

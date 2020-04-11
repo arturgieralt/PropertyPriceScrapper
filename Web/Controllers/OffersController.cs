@@ -2,6 +2,7 @@
 using BusinessLogic.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Web.Models;
 
 namespace Web.Controllers
 {
@@ -27,9 +28,9 @@ namespace Web.Controllers
 
         [Route("aggregated")]
         [HttpGet]
-        public async Task<IActionResult> GetAllAggregated()
+        public async Task<IActionResult> GetAllAggregated([FromQuery] GetAllAggregatedParams requestParams)
         {
-            var offers = await _service.GetAllAggregatedAsync();
+            var offers = await _service.GetAllAggregatedAsync(requestParams.MinSize, requestParams.MaxSize);
             return Ok(offers);
         }
     }
